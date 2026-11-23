@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>สำรวจความต้องการอบรมวิชา AI | แผนกอุบัติเหตุฉุกเฉิน รพ.ระโนด</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#10263b; --teal:#0d7c7a; --teal-soft:#e2f2f1; --red:#d94848;
+    --ink:#17232e; --muted:#5b6b78; --line:#d5dee5; --bg:#eef3f6; --card:#fff; --on:#fff;
+    --ok:#1b7f4b; --err:#b3261e;
+  }
+  @media (prefers-color-scheme:dark){:root{
+    --navy:#0a1620; --teal:#4fc3c0; --teal-soft:#16302f; --red:#ff7a7a;
+    --ink:#e7eef3; --muted:#9db0bd; --line:#2b3b47; --bg:#0d151b; --card:#15202a; --on:#0a1620;
+  }}
+  *{box-sizing:border-box}
+  [hidden]{display:none!important}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:'Sarabun',system-ui,sans-serif;line-height:1.65;font-size:16px}
+
+  /* ---------- Header ---------- */
+  .hero{background:var(--navy);color:#fff;padding:calc(28px + env(safe-area-inset-top,0px)) 20px 64px}
+  .hero-in{max-width:680px;margin:0 auto}
+  .hero small{display:block;opacity:.75;font-size:.95rem;margin-bottom:6px}
+  .hero h1{margin:0;font-size:clamp(1.55rem,5.2vw,2.15rem);line-height:1.3;font-weight:700}
+  .hero p{margin:10px 0 0;max-width:46ch;opacity:.85}
+  .ecg{display:block;width:100%;height:46px;margin-top:22px}
+  .ecg path{fill:none;stroke:var(--red);stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:640;stroke-dashoffset:640;animation:draw 2.2s ease-out .2s forwards}
+  @keyframes draw{to{stroke-dashoffset:0}}
+  @media (prefers-reduced-motion:reduce){.ecg path{animation:none;stroke-dashoffset:0}}
+
+  /* ---------- Card ---------- */
+  main{max-width:680px;margin:-40px auto 0;padding:0 14px calc(40px + env(safe-area-inset-bottom,0px))}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:0 10px 30px rgba(16,38,59,.12);overflow:hidden}
+
+  /* ---------- Progress ---------- */
+  .prog{padding:18px 22px 0}
+  .prog-top{display:flex;justify-content:space-between;font-size:.9rem;color:var(--muted);margin-bottom:8px}
+  .prog-top b{color:var(--ink)}
+  .bar{height:6px;background:var(--line);border-radius:99px;overflow:hidden}
+  .bar i{display:block;height:100%;width:25%;background:var(--teal);border-radius:99px;transition:width .35s}
+
+  /* ---------- Steps ---------- */
+  .step{display:none;padding:22px}
+  .step.on{display:block}
+  .step h2{margin:0 0 4px;font-size:1.25rem}
+  .step .sub{margin:0 0 20px;color:var(--muted);font-size:.95rem}
+  .q{margin:0 0 22px;padding:0;border:0;min-width:0}
+  .q>legend,.q>label.t{display:block;font-weight:600;margin:0 0 9px;padding:0;font-size:1.02rem}
+  .opt{font-weight:400;color:var(--muted);font-size:.88rem;margin-left:6px}
+  .note{font-size:.86rem;color:var(--muted);margin:7px 0 0}
+
+  input[type=text],input[type=number],textarea{width:100%;padding:12px 14px;font:inherit;color:var(--ink);background:var(--card);border:1.5px solid var(--line);border-radius:10px;transition:border-color .15s}
+  input:hover,textarea:hover{border-color:var(--muted)}
+  input:focus,textarea:focus{border-color:var(--teal);outline:none;box-shadow:0 0 0 3px var(--teal-soft)}
+  button:focus-visible,.pick input:focus-visible+span{outline:3px solid var(--teal);outline-offset:2px}
+
+  /* ---------- Option cards ---------- */
+  .picks{display:grid;gap:9px}
+  .picks.cols{grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+  .pick{position:relative;display:block}
+  .pick input{position:absolute;opacity:0;pointer-events:none}
+  .pick span{display:flex;align-items:center;gap:12px;min-height:50px;padding:11px 14px;border:1.5px solid var(--line);border-radius:10px;cursor:pointer;background:var(--card);transition:background .15s,border-color .15s;user-select:none}
+  .pick span:hover{border-color:var(--teal)}
+  .pick span::before{content:"";flex:none;width:20px;height:20px;border:2px solid var(--muted);border-radius:50%;background:var(--card)}
+  .pick.multi span::before{border-radius:5px}
+  .pick input:checked+span{background:var(--teal-soft);border-color:var(--teal);font-weight:600}
+  .pick input:checked+span::before{border-color:var(--teal);background:var(--teal);box-shadow:inset 0 0 0 4px var(--teal-soft)}
+  .pick.multi input:checked+span::before{box-shadow:none;background:var(--teal) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3 8.5l3 3 7-7' fill='none' stroke='white' stroke-width='2.2' stroke-linecap='round'/%3E%3C/svg%3E") center/contain no-repeat}
+
+  /* ---------- Buttons ---------- */
+  .nav{display:flex;gap:10px;padding:0 22px 22px}
+  .btn{flex:1;padding:14px 18px;font:inherit;font-weight:700;border-radius:10px;cursor:pointer;border:1.5px solid transparent}
+  .btn.primary{background:var(--teal);color:var(--on)}
+  .btn.primary:hover{filter:brightness(1.08)}
+  .btn.ghost{flex:0 0 auto;background:transparent;border-color:var(--line);color:var(--ink)}
+  .btn.ghost:hover{border-color:var(--muted)}
+  .btn:disabled{opacity:.6;cursor:wait}
+  .err{display:none;margin:0 22px 18px;padding:11px 14px;border-radius:10px;background:#fbe9e7;color:var(--err);font-size:.95rem}
+  .err.show{display:block}
+  @media (prefers-color-scheme:dark){.err{background:#3a1d1b;color:#ff9c94}}
+
+  /* ---------- Review ---------- */
+  .review{margin:0 0 22px;padding:14px 16px;border-radius:10px;background:var(--bg);border:1px solid var(--line);font-size:.95rem}
+  .review div{display:flex;gap:10px;padding:4px 0}
+  .review dt{flex:0 0 112px;color:var(--muted)}
+  .review dd{margin:0;flex:1;word-break:break-word}
+
+  /* ---------- Success ---------- */
+  .done{display:none;padding:44px 24px;text-align:center}
+  .done.on{display:block}
+  .done .tick{width:64px;height:64px;margin:0 auto 14px;border-radius:50%;background:var(--teal-soft);display:grid;place-items:center}
+  .done h2{margin:0 0 6px}
+  .done p{margin:0 auto;color:var(--muted);max-width:38ch}
+  footer{text-align:center;color:var(--muted);font-size:.85rem;margin-top:18px}
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="hero-in">
+    <small>โรงพยาบาลระโนด · แผนกอุบัติเหตุและฉุกเฉิน</small>
+    <h1>สำรวจความต้องการเข้าอบรมวิชา AI สำหรับพยาบาล</h1>
+    <p>ข้อมูลของคุณจะใช้วางแผนหลักสูตรให้ตรงกับงานจริงในห้องฉุกเฉิน ใช้เวลาตอบประมาณ 2 นาที</p>
+    <svg class="ecg" viewBox="0 0 640 46" preserveAspectRatio="none" aria-hidden="true">
+      <path d="M0 26 H150 L168 26 L180 6 L196 42 L210 14 L222 26 H330 L348 26 L360 8 L376 40 L390 16 L402 26 H640"/>
+    </svg>
+  </div>
+</header>
+
+<main>
+  <form class="card" id="f" novalidate>
+    <div class="prog" id="prog">
+      <div class="prog-top"><span>ขั้นที่ <b id="pNum">1</b> จาก <b id="pTot">4</b></span><span id="pName">ข้อมูลทั่วไป</span></div>
+      <div class="bar"><i id="pBar"></i></div>
+    </div>
+
+    <!-- ขั้นที่ 1 -->
+    <section class="step on" data-name="ข้อมูลทั่วไป">
+      <h2>ข้อมูลทั่วไป</h2>
+      <p class="sub">เพื่อนับจำนวนผู้ตอบและไม่ให้ตอบซ้ำ</p>
+      <div class="q">
+        <label class="t" for="name">ชื่อ-นามสกุล</label>
+        <input type="text" id="name" autocomplete="name" placeholder="เช่น สมหญิง ใจดี">
+        <p class="note">หากส่งซ้ำ ระบบจะอัปเดตคำตอบเดิมของคุณ</p>
+      </div>
+      <fieldset class="q"><legend>ตำแหน่ง</legend><div class="picks cols" id="position"></div></fieldset>
+      <div class="q">
+        <label class="t" for="years">อายุงาน (ปี)<span class="opt">ไม่บังคับ</span></label>
+        <input type="number" id="years" min="0" max="50" inputmode="numeric" placeholder="เช่น 5">
+      </div>
+    </section>
+
+    <!-- ขั้นที่ 2 -->
+    <section class="step" data-name="ประสบการณ์และความสนใจ">
+      <h2>ประสบการณ์และความสนใจ</h2>
+      <p class="sub">ช่วยให้เราจัดระดับเนื้อหาให้เหมาะสม</p>
+      <fieldset class="q"><legend>เคยใช้ AI หรือไม่ <span class="opt">เช่น ChatGPT, Gemini, Claude</span></legend><div class="picks" id="experience"></div></fieldset>
+      <fieldset class="q"><legend>สนใจเข้าอบรมวิชา AI แค่ไหน</legend><div class="picks cols" id="interest"></div></fieldset>
+    </section>
+
+    <!-- ขั้นที่ 3 -->
+    <section class="step" data-name="หัวข้อและรูปแบบ" id="detailStep">
+      <h2>หัวข้อและรูปแบบการอบรม</h2>
+      <p class="sub">เลือกสิ่งที่อยากเรียนและวิธีที่สะดวก</p>
+      <fieldset class="q"><legend>หัวข้อที่สนใจ<span class="opt">เลือกได้หลายข้อ</span></legend><div class="picks" id="topics"></div></fieldset>
+      <fieldset class="q"><legend>รูปแบบการอบรม</legend><div class="picks" id="format"></div></fieldset>
+      <fieldset class="q"><legend>ช่วงเวลาที่สะดวก<span class="opt">เลือกได้หลายข้อ</span></legend><div class="picks cols" id="times"></div></fieldset>
+    </section>
+
+    <!-- ขั้นที่ 4 -->
+    <section class="step" data-name="ตรวจสอบและส่ง">
+      <h2>ตรวจสอบและส่ง</h2>
+      <p class="sub">ตรวจคำตอบอีกครั้งก่อนส่ง</p>
+      <dl class="review" id="review"></dl>
+      <div class="q">
+        <label class="t" for="comment">ข้อเสนอแนะ<span class="opt">ไม่บังคับ</span></label>
+        <textarea id="comment" rows="3" placeholder="สิ่งที่อยากให้มีในหลักสูตร หรือข้อกังวลเกี่ยวกับการใช้ AI"></textarea>
+        <p class="note">กรุณาอย่าใส่ข้อมูลที่ระบุตัวผู้ป่วยในช่องนี้</p>
+      </div>
+    </section>
+
+    <div class="err" id="err" role="alert"></div>
+    <div class="nav" id="nav">
+      <button type="button" class="btn ghost" id="back" hidden>ย้อนกลับ</button>
+      <button type="button" class="btn primary" id="next">ถัดไป</button>
+    </div>
+
+    <div class="done" id="done" role="status">
+      <div class="tick"><svg width="30" height="30" viewBox="0 0 16 16"><path d="M3 8.5l3 3 7-7" fill="none" stroke="var(--teal)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <h2 id="doneTitle">ส่งแบบสำรวจเรียบร้อยแล้ว</h2>
+      <p>ขอบคุณที่ร่วมตอบ ข้อมูลของคุณจะช่วยให้การจัดอบรมตรงกับความต้องการของทีมมากขึ้น</p>
+    </div>
+  </form>
+  <footer>แผนกอุบัติเหตุและฉุกเฉิน โรงพยาบาลระโนด</footer>
+</main>
+
+<script>
+  // ▼▼ วางลิงก์ Web app ของ Google Apps Script (ลงท้ายด้วย /exec) ตรงนี้ ▼▼
+  const GAS_URL = 'https://script.google.com/macros/s/AKfycbyyT9pjBSTXattqsYVJU3Hr_aBZSC69MXwd9MyDx42esBhX_yPmOu7tj2yBYCRwdw/exec';
+
+  // ▼▼ ตัวเลือก (ต้องตรงกับ CONFIG ใน Code.gs) ▼▼
+  const OPT = {
+    position: ['พยาบาลวิชาชีพ', 'พยาบาลวิชาชีพชำนาญการ', 'หัวหน้าหน่วย/หัวหน้างาน', 'อื่น ๆ'],
+    experience: ['ไม่เคยใช้', 'เคยลองใช้บ้าง', 'ใช้เป็นประจำ'],
+    interest: ['สนใจมาก', 'สนใจ', 'เฉย ๆ', 'ไม่สนใจ'],
+    topics: [
+      'พื้นฐาน AI และ Generative AI',
+      'การเขียนคำสั่ง (Prompt) ให้ได้ผลดี',
+      'AI ช่วยบันทึกทางการพยาบาล/สรุปเคส',
+      'AI ช่วยคัดแยกผู้ป่วย (Triage) และสนับสนุนการตัดสินใจ',
+      'AI ช่วยสร้างสื่อให้ความรู้ผู้ป่วยและญาติ',
+      'จริยธรรม PDPA และความปลอดภัยของข้อมูลผู้ป่วย',
+      'AI ช่วยงานวิจัยและงานคุณภาพ (R2R/CQI)'
+    ],
+    format: ['อบรมที่โรงพยาบาล (Onsite)', 'อบรมออนไลน์', 'แบบผสม (Hybrid)'],
+    times: ['วันธรรมดา ช่วงเช้า', 'วันธรรมดา ช่วงบ่าย', 'หลังออกเวร', 'วันหยุด']
+  };
+
+  const $ = id => document.getElementById(id);
+  const one = n => (document.querySelector(`input[name="${n}"]:checked`) || {}).value || '';
+  const many = n => [...document.querySelectorAll(`input[name="${n}"]:checked`)].map(i => i.value);
+
+  function render(id, type) {
+    $(id).innerHTML = OPT[id].map(v =>
+      `<label class="pick ${type === 'checkbox' ? 'multi' : ''}"><input type="${type}" name="${id}" value="${v}"><span>${v}</span></label>`).join('');
+  }
+  render('position', 'radio'); render('experience', 'radio'); render('interest', 'radio');
+  render('topics', 'checkbox'); render('format', 'radio'); render('times', 'checkbox');
+
+  const steps = [...document.querySelectorAll('.step')];
+  let cur = 0;
+  const skipping = () => one('interest') === 'ไม่สนใจ';
+  const order = () => steps.map((_, i) => i).filter(i => !(i === 2 && skipping()));
+
+  function showErr(t) { $('err').textContent = t; $('err').classList.toggle('show', !!t); }
+
+  function show(i) {
+    cur = i;
+    steps.forEach((s, k) => s.classList.toggle('on', k === i));
+    const o = order(), pos = o.indexOf(i);
+    $('pNum').textContent = pos + 1;
+    $('pTot').textContent = o.length;
+    $('pName').textContent = steps[i].dataset.name;
+    $('pBar').style.width = ((pos + 1) / o.length * 100) + '%';
+    $('back').hidden = pos === 0;
+    $('next').textContent = pos === o.length - 1 ? 'ส่งแบบสำรวจ' : 'ถัดไป';
+    if (i === 3) renderReview();
+    showErr('');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function validate(i) {
+    if (i === 0) {
+      if (!$('name').value.trim()) return 'กรุณากรอกชื่อ-นามสกุล';
+      if (!one('position')) return 'กรุณาเลือกตำแหน่ง';
+    }
+    if (i === 1) {
+      if (!one('experience')) return 'กรุณาเลือกประสบการณ์ใช้ AI';
+      if (!one('interest')) return 'กรุณาเลือกระดับความสนใจ';
+    }
+    if (i === 2) {
+      if (!many('topics').length) return 'กรุณาเลือกหัวข้อที่สนใจอย่างน้อย 1 หัวข้อ';
+      if (!one('format')) return 'กรุณาเลือกรูปแบบการอบรม';
+    }
+    return '';
+  }
+
+  function collect() {
+    const skip = skipping();
+    return {
+      name: $('name').value.trim(), position: one('position'), years: $('years').value.trim(),
+      experience: one('experience'), interest: one('interest'),
+      topics: skip ? [] : many('topics'), format: skip ? '' : one('format'), times: skip ? [] : many('times'),
+      comment: $('comment').value.trim()
+    };
+  }
+
+  function renderReview() {
+    const d = collect();
+    const rows = [['ชื่อ', d.name], ['ตำแหน่ง', d.position], ['ประสบการณ์ AI', d.experience], ['ความสนใจ', d.interest]];
+    if (!skipping()) rows.push(['หัวข้อ', d.topics.join(', ')], ['รูปแบบ', d.format], ['เวลาที่สะดวก', d.times.join(', ') || '-']);
+    $('review').innerHTML = rows.map(([k, v]) => `<div><dt>${k}</dt><dd></dd></div>`).join('');
+    [...$('review').querySelectorAll('dd')].forEach((el, i) => el.textContent = rows[i][1]);
+  }
+
+  $('interest').addEventListener('change', () => {
+    const o = order(); $('pTot').textContent = o.length;
+  });
+
+  $('back').addEventListener('click', () => {
+    const o = order(); show(o[Math.max(0, o.indexOf(cur) - 1)]);
+  });
+
+  $('next').addEventListener('click', async () => {
+    const msg = validate(cur);
+    if (msg) return showErr(msg);
+    const o = order(), pos = o.indexOf(cur);
+    if (pos < o.length - 1) return show(o[pos + 1]);
+
+    // ขั้นสุดท้าย: ส่งข้อมูล
+    if (!GAS_URL.startsWith('https://script.google.com/')) return showErr('ยังไม่ได้ตั้งค่าลิงก์ GAS_URL ในไฟล์ index.html');
+    $('next').disabled = true; $('back').disabled = true; $('next').textContent = 'กำลังส่ง...';
+    try {
+      // ใช้ text/plain เพื่อเลี่ยง CORS preflight ที่ Apps Script ไม่รองรับ
+      const res = await fetch(GAS_URL, {
+        method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(collect())
+      });
+      const r = await res.json();
+      if (!r.ok) throw new Error(r.message);
+      steps.forEach(s => s.classList.remove('on'));
+      $('prog').hidden = true; $('nav').hidden = true; showErr('');
+      $('doneTitle').textContent = r.message;
+      $('done').classList.add('on');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch (e) {
+      showErr('ส่งไม่สำเร็จ: ' + e.message);
+      $('next').disabled = false; $('back').disabled = false; $('next').textContent = 'ส่งแบบสำรวจ';
+    }
+  });
+
+  show(0);
+</script>
+</body>
+</html>
